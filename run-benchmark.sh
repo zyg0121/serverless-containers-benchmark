@@ -199,6 +199,12 @@ deploy_fargate() {
         --protocol tcp \
         --port 3000 \
         --cidr 0.0.0.0/0
+
+    aws ec2 authorize-security-group-ingress \
+        --group-id $SG_ID \
+        --protocol tcp \
+        --port 80 \
+        --cidr 0.0.0.0/0
     
     aws ec2 authorize-security-group-egress \
         --group-id $SG_ID \
@@ -412,7 +418,7 @@ run_tests() {
         --fargate-url "${FARGATE_URL}/api/health" \
         --cold-iterations 5 \
         --warm-iterations 10 \
-        --idle-time 180 \
+        --idle-time 60 \
         --output-dir $OUTPUT_DIR
     
     # 运行JMeter负载测试
