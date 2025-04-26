@@ -70,8 +70,8 @@ deploy_lambda() {
         --package-type Image \
         --code ImageUri=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:latest \
         --role $LAMBDA_ROLE_ARN \
-        --timeout 30 \
-        --memory-size 1024 \
+        --timeout 15 \
+        --memory-size 2048 \
         --environment Variables="{MONGODB_URI=$MONGODB_URI,NODE_ENV=production}"
     
     # 创建API Gateway
@@ -369,8 +369,8 @@ EOF
             "ScaleOutCooldown": 60
         }'
     
-    echo "Fargate URL: http://$FARGATE_URL"
-    echo "http://$FARGATE_URL" > $OUTPUT_DIR/fargate_url.txt
+    echo "Fargate URL: https://$FARGATE_URL"
+    echo "https://$FARGATE_URL" > $OUTPUT_DIR/fargate_url.txt
     
     # 保存资源IDs用于清理
     echo $VPC_ID > $OUTPUT_DIR/vpc_id.txt
@@ -434,7 +434,7 @@ run_tests() {
     
     echo "运行Fargate JMeter测试..."
     jmeter -n -t tests/jmeter/load_test.jmx \
-        -Jhost=$(echo $FARGATE_URL | sed 's/http:\/\///') \
+        -Jhost=$(echo $FARGATE_URL | sed 's/https:\/\///') \
         -Jpath="/api" \
         -l $OUTPUT_DIR/fargate_results.jtl \
         -j $OUTPUT_DIR/fargate_jmeter.log
